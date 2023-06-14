@@ -1,4 +1,5 @@
 import logging
+import os
 import threading
 import time
 import psycopg2
@@ -26,20 +27,32 @@ class MyThread(threading.Thread):
         res_params = requests.get(url=car_detail, headers=headers)
         soup = BeautifulSoup(res_params.text, 'lxml')
         name = soup.find('a', class_='cell_car__28WzZ line-2').text
-        logging.info('正在爬取：' + name + '的参数......')
-        divs = soup.findAll('div', class_='table_root__14vH_')
-        str_array = ['基本信息', '车身', '发动机', '变速箱', '底盘/转向', '车轮/制动']
-        text_out = ''
-        for div in divs:
-            for iii in str_array:
-                if div.text.startswith(iii):
-                    text_out += get_params(div, iii)
-        logging.info(name + '爬取完成,正在保存txt文档......')
-        with open(get_config('save_dir', 'dir') + "\\" + name + ".txt", "w", encoding="utf-8") as f:
-            f.write(text_out.rstrip(","))
-        if get_config('save_db', 'save') == 'true':
-            save_to_db(self.pool, name, text_out.rstrip(","))
-        logging.info(name + '.txt文档,保存完成！')
+        if os.path.exists(get_config('save_dir', 'dir') + "\\" + name + ".txt"):
+            pass
+        else:
+            logging.info('正在爬取：' + name + '的参数......')
+            divs = soup.findAll('div', class_='table_root__14vH_')
+            str_array = ['基本信息', '车身', '发动机', '变速箱', '底盘/转向', '车轮/制动']
+            text_out = ''
+            for div in divs:
+                for iii in str_array:
+                    if div.text.startswith(iii):
+                        text_out += get_params(div, iii)
+            logging.info(name + '爬取完成,正在保存txt文档......')
+            with open(get_config('save_dir', 'dir') + "\\" + name + ".txt", "w", encoding="utf-8") as f:
+                f.write(text_out.rstrip(","))
+            if get_config('save_db', 'save') == 'true':
+                save_to_db(self.pool, name, text_out.rstrip(","))
+            logging.info(name + '.txt文档,保存完成！')
+
+
+def str_to_bool(s):
+    if s.lower() == 'true':
+        return True
+    elif s.lower() == 'false':
+        return False
+    else:
+        raise ValueError("字符串不是True或False")
 
 
 if __name__ == '__main__':
@@ -50,7 +63,7 @@ if __name__ == '__main__':
     car_series_id_list = []
     logging.info('正在读取配置文件......')
     clean_dir(get_config('save_dir', 'dir'))
-    if not get_config('is_auto', 'auto'):
+    if not str_to_bool(get_config('is_auto', 'auto')):
         car_type_list = get_config('car_series', 'series').split(",")
     else:
         config_car_series()
@@ -66,9 +79,9 @@ if __name__ == '__main__':
         pool = None
     threads = []
     for i in car_type_list:
-        car_series_id_list.append(get_car_series_id(i, "南京"))
+        car_series_id_list.append(get_car_series_id(i, "武汉"))
         for n in car_series_id_list:
-            for kk in get_car_id(n, "南京"):
+            for kk in get_car_id(n, "武汉"):
                 thread = MyThread(name=kk, car_id=kk, pool=pool)
                 threads.append(thread)
                 thread.start()

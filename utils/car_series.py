@@ -33,7 +33,7 @@ def get_root_path():
 
 def config_car_series():
     new_string = ''
-    for i in range(1, int(get_config('car_series_pages', 'number'))):
+    for i in range(int(get_config('car_series_pages', 'start')), int(get_config('car_series_pages', 'end'))):
         new_string += get_car_series(i)
 
     new_string = new_string.rstrip(",")
