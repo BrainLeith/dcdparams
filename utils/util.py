@@ -33,7 +33,6 @@ def clean_dir(dir_path):
         os.makedirs(dir_path)
     else:
         shutil.rmtree(dir_path, ignore_errors=True)
-    os.makedirs(dir_path)
 
 
 def get_car_series_id(car_name, city_name):
