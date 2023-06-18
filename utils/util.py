@@ -73,5 +73,5 @@ def get_params(div_tag, sub_string):
     for j in range(0, len(even_list)):
         for ii in range(0, len(even_list2)):
             if j == ii:
-                text = text + (even_list[j] + ":" + even_list2[ii]) + ','
+                text = text + (even_list[j] + even_list2[ii]) + '，'
     return text
