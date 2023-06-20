@@ -32,7 +32,7 @@ class MyThread(threading.Thread):
         else:
             logging.info('正在爬取：' + name + '的参数......')
             divs = soup.findAll('div', class_='table_root__14vH_')
-            str_array = ['基本信息', '车身', '发动机', '变速箱', '底盘/转向', '车轮/制动']
+            str_array = ['基本信息', '车身', '发动机', '变速箱', '底盘/转向', '车轮/制动', '内部配置']
             text_out = ''
             for div in divs:
                 for iii in str_array:
@@ -42,7 +42,7 @@ class MyThread(threading.Thread):
             with open(get_config('save_dir', 'dir') + "\\" + name + ".txt", "w", encoding="utf-8") as f:
                 f.write(text_out.rstrip(","))
             if get_config('save_db', 'save') == 'true':
-                save_to_db(self.pool, name, text_out.rstrip(","))
+                save_to_db(self.pool, name, text_out.rstrip("，"))
             logging.info(name + '.txt文档,保存完成！')
 
 
