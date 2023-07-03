@@ -43,9 +43,12 @@ class DownloadThread(threading.Thread):
     def run(self):
         song_url = f'https://music.163.com/song/media/outer/url?id={self.song_id}.mp3'
         print(song_url)
-        song_data = requests.get(song_url, headers=self.headers).content
-        with open(f'static/{self.song_name}.mp3', 'wb') as f:
-            f.write(song_data)
+        try:
+            song_data = requests.get(song_url, headers=self.headers).content
+            with open(f'static/{self.song_name}.mp3', 'wb') as f:
+                f.write(song_data)
+        except Exception as e:
+            print(f'下载歌曲{self.song_name}出错{e}')
 
 
 if __name__ == '__main__':
